@@ -1,0 +1,14 @@
+name: Budweiser_viz
+title: Budweiser_viz
+username:
+account: lauraahumada
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5085187
+bundleId: 5234080
+url: https://lauraahumada.shinyapps.io/Budweiser_viz/
+when: 1636502016.31575
+lastSyncTime: 1636502016.31578
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: _site.yml|Beers.csv|Breweries.csv|Budweiser_analysis.html|Budweiser_analysis.Rmd|homework12_ABU_IBU.Rmd|homework12_allGraphs.Rmd|HW12_beer_read_viewy.Rmd|index.html

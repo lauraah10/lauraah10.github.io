@@ -1,0 +1,14 @@
+name: NewShiny
+title: NewShiny
+username:
+account: lauraahumada
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5080384
+bundleId: 5232514
+url: https://lauraahumada.shinyapps.io/NewShiny/
+when: 1636474851.37469
+lastSyncTime: 1636474851.37471
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: BeerShiny.Rmd|Homework 12.Rmd|Homework-12.html|homework12_2.Rmd|server.R|ui.R
