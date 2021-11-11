@@ -1,6 +1,6 @@
 ---
 title: "Live Session 2 CLT"
-author: "Bivin"
+author: "Laura Ahumada"
 date: "9/6/2018"
 output:
   html_document:
