@@ -1,0 +1,805 @@
+---
+title: "Workplace trends and insight on Fritolay"
+author: "Laura Ahumada and Alan Abadzic"
+date: "10/5/2021"
+output: html_document
+---
+  
+
+
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+
+```{r include=FALSE}
+#Load Libraries
+library(scales)  
+library(gridExtra)
+library(dplyr)
+library(tidyr)
+library(stringi)
+library(rvest) #html_table, html_node
+library(ggplot2)
+library(RCurl) #getURL
+library(naniar)
+library(e1071)
+library(tm) 
+library(stringr)
+library("kableExtra")
+library(ggthemes)
+library("ggpubr")
+library(class)
+library(caret)
+library(usmap) #import the package
+library(ggplot2) #use ggplot2 to add layer for visualization
+library(ggstatsplot)
+library(e1071)
+library(caret)
+```
+
+
+- All attributes in the data
+```{r}
+#Reading Files
+fritolay=read.csv("CaseStudy2-data.csv")
+# all columns
+names(fritolay)
+
+```
+
+
+# Exploratory Analysis on the data
+## EDA: Categorical values
+```{r}
+#Missing values
+missing=sapply(fritolay, function(x) sum(is.na(x))) #no missing values
+#data with descriptive values
+char_data=fritolay[, sapply(fritolay, class) == 'character']  #9 char values
+#data with continuous values
+cont_data=fritolay[, sapply(fritolay, class) != 'character']  #27 num values
+
+# unique values in each descriptive value
+unique_col=char_data %>% summarize_all(n_distinct)
+unique_col=gather(unique_col, Columns_names, Unique_Values, Attrition:OverTime) %>% arrange(Unique_Values)
+unique_col
+# Only JobRole and EducationField have more than 3 unique characters
+
+# unique var for all char variable
+unique_chars=sapply(char_data, function(x) (unique(x))) #no empty strings or or anything
+#remove Over18 there is only one value. Not useful
+fritolay=fritolay %>% select(-Over18)
+```
+
+- No NA's nor empty values in Categorical data 
+- Only Educational Field and Job Role have more than 3 unique attribute
+- All people are over 18 years old
+ - Over18 columns can be removed as it has a yes for the whole data
+
+\center __Percent distribution__ \center
+
+```{r, echo=FALSE, out.width="180%", out.height="150%"}
+
+f_m=fritolay %>% group_by(Gender) %>%
+  dplyr::summarize(count=n()) %>% mutate(percent = (count / sum(count))*100)
+plot1=f_m %>% ggplot(aes(x=Gender, y=percent, fill=Gender)) + 
+  ylim(0,100)+
+  geom_col()+ggtitle("Gender")   +
+  geom_text(data=f_m, size=3, aes(x=Gender, label=(paste((as.integer(percent)),"%",sep="")), y=percent, fill=NULL), nudge_y=8)+
+  coord_polar() +
+  theme(axis.text = element_text(size = 8)) + theme_void() 
+
+M_s=fritolay %>% group_by(MaritalStatus) %>%
+  dplyr::summarize(count=n()) %>% mutate(percent = (count / sum(count))*100)
+plot2=M_s %>% ggplot(aes(x=MaritalStatus, y=percent, fill=MaritalStatus)) + 
+  ylim(0,100)+
+  geom_col()+ggtitle("Marital Status")  + theme(legend.position = "none") +
+  geom_text(data=M_s, size=3, aes(x=MaritalStatus, label=(paste((as.integer(percent)),"%",sep="")), y=percent, fill=NULL), nudge_y=8)+
+  coord_polar() + theme_void() +
+  theme(legend.title = element_blank()) +theme(plot.title = element_text(hjust = 0.5))
+
+attr=fritolay %>% group_by(Attrition) %>%
+  dplyr::summarize(count=n()) %>% mutate(percent = (count / sum(count))*100)
+plot3=attr %>% ggplot(aes(x=Attrition, y=percent, fill=Attrition)) + 
+  ylim(0,100)+
+  geom_col()+ggtitle("Attrition")  +
+  geom_text(data=attr, size=3, aes(x=Attrition, label=(paste((as.integer(percent)),"%",sep="")), y=percent, fill=NULL), nudge_y=8)+
+  coord_polar() +
+  theme(axis.text = element_text(size = 8)) + theme_void() +theme(plot.title = element_text(hjust = 0.5)) 
+
+ot=fritolay %>% group_by(OverTime) %>%
+  dplyr::summarize(count=n()) %>% mutate(percent = (count / sum(count))*100)
+plot4=ot %>% ggplot(aes(x=OverTime, y=percent, fill=OverTime)) + 
+  ylim(0,100)+
+  geom_col()+ggtitle("OverTime")  + theme(legend.position = "none") +
+  geom_text(data=ot, size=3, aes(x=OverTime, label=(paste((as.integer(percent)),"%",sep="")), y=percent, fill=NULL), nudge_y=6)+
+  coord_polar() +
+  theme(axis.text = element_text(size = 8)) + theme_void() +
+  theme(legend.title = element_blank()) 
+
+bt=fritolay %>% group_by(BusinessTravel) %>%
+  dplyr::summarize(count=n()) %>% mutate(percent = (count / sum(count))*100)
+plot5=bt %>% ggplot(aes(x=BusinessTravel, y=percent, fill=BusinessTravel)) +
+  ylim(0,100)+
+  geom_col()+ggtitle("Travel")  + theme(legend.position = "none") +
+  geom_text(data=bt,size=3, aes(x=BusinessTravel,label=(paste((as.integer(percent)),"%",sep="")), y=percent, fill=NULL), nudge_y=6)+
+  coord_polar()+
+  theme(axis.text = element_text(size = 6)) + theme_void()+
+  theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+dp=fritolay %>% group_by(Department) %>%
+  dplyr::summarize(count=n()) %>% mutate(percent = (count / sum(count))*100)
+plot6=dp %>% ggplot(aes(x=Department, y=percent, fill=Department)) + 
+  ylim(0,100)+
+  geom_col()+ggtitle("Department")   +
+  geom_text(data=dp,size=3, aes(x=Department, label=(paste((as.integer(percent)),"%",sep="")), fill=NULL), nudge_y=8)+
+  coord_polar() +
+  theme(axis.text = element_text(size = 6)) + theme_void() +
+ theme(plot.title = element_text(hjust = 0.5))  +
+  theme(legend.title = element_blank()) 
+
+dp=fritolay %>% group_by(JobInvolvement) %>%
+  dplyr::summarize(count=n()) %>% mutate(percent = (count / sum(count))*100)
+plot7=dp %>% ggplot(aes(x=as.factor(JobInvolvement), y=percent, fill=as.factor(JobInvolvement))) + 
+  ylim(0,100)+
+  geom_col()+ggtitle("Job Involvement")   +
+  geom_text(data=dp,size=3, aes(x=as.factor(JobInvolvement), label=(paste((as.integer(percent)),"%",sep="")), fill=NULL), nudge_y=8)+
+  coord_polar() +
+  theme(axis.text = element_text(size = 6)) + theme_void() +
+ theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.title = element_blank()) 
+
+dp=fritolay %>% group_by(JobSatisfaction) %>%
+  dplyr::summarize(count=n()) %>% mutate(percent = (count / sum(count))*100)
+plot8=dp %>% ggplot(aes(x=as.factor(JobSatisfaction), y=percent, fill=as.factor(JobSatisfaction))) + 
+  ylim(0,100)+
+  geom_col()+ggtitle("Job Satisfaction")  + 
+  geom_text(data=dp,size=3, aes(x=as.factor(JobSatisfaction), label=(paste((as.integer(percent)),"%",sep="")), fill=NULL), nudge_y=8)+
+  coord_polar() +
+  theme(axis.text = element_text(size = 6)) + theme_void()+
+  theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+#job involvement-job satisfaction
+
+grid.arrange(plot3, plot1, plot4,plot2, plot5,plot6, ncol=2)
+```
+
+```{r, echo=FALSE, fig.align = 'center'}
+grid.arrange(plot7, plot8, ncol=2)
+
+```
+\center __Features vs attrition percent__ \center
+
+
+```{r, echo=FALSE, fig.align = 'center'}
+m=fritolay %>% group_by(MaritalStatus) %>% summarize(No=round(((sum(Attrition=="No")/n())*100),1),Yes=100-(round(((sum(Attrition=="No")/n())*100),1)))
+m=gather(m, Attrition, per,Yes:No, factor_key=TRUE)
+
+a=m %>% ggplot(aes(x =MaritalStatus, y=per, fill=Attrition)) +
+  geom_col() +ggtitle("MaritalStatus") +
+  labs(y = "Count")+xlab("MaritalStatus")+
+  theme_classic() +
+  geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), y = per + 0.15), vjust = -.3) +
+  theme(legend.position="none")
+
+#-----
+m=fritolay %>% group_by(BusinessTravel) %>% summarize(No=round(((sum(Attrition=="No")/n())*100),1),Yes=100-(round(((sum(Attrition=="No")/n())*100),1)))
+m=gather(m, Attrition, per,Yes:No, factor_key=TRUE)
+
+b=m %>% ggplot(aes(x =per, y=BusinessTravel, fill=Attrition)) + 
+  geom_col() +xlab("Percent")+
+  geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), x = per), position = position_stack(vjust = 0.4)) +
+  theme_classic() +
+  ylab("Travel")+ggtitle("Business Travel")+ theme(plot.title = element_text(hjust = 0.5)) 
+
+#b=fritolay %>% ggplot(aes(y = as.factor(BusinessTravel))) +
+ # geom_bar(aes(fill = Attrition)) +ggtitle("BusinessTravel") +
+  #ylab("BusinessTravel") +labs(x = "Count")+
+#  geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), x = per + 0.15), nudge_x=2, vjust = -.3)+theme(legend.position = "none")
+#---------
+m=fritolay %>% group_by(Department) %>% summarize(No=round(((sum(Attrition=="No")/n())*100),1),Yes=100-(round(((sum(Attrition=="No")/n())*100),1)))
+m=gather(m, Attrition, per,Yes:No, factor_key=TRUE)
+
+c=m %>% ggplot(aes(x =per, y=Department, fill=Attrition)) + 
+  geom_col() +xlab("Percent")+
+  geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), x = per), position = position_stack(vjust = 0.4)) +
+  theme_classic() +
+  ylab("Department")+theme(legend.position = "none")
+
+#--------
+m=fritolay %>% group_by(EducationField) %>% summarize(No=round(((sum(Attrition=="No")/n())*100),1),Yes=100-(round(((sum(Attrition=="No")/n())*100),1)))
+m=gather(m, Attrition, per,Yes:No, factor_key=TRUE)
+
+d=m %>% ggplot(aes(x =per, y=EducationField, fill=Attrition)) + 
+  geom_col() +xlab("Percent")+
+  geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), x = per), position = position_stack(vjust = 0.4)) +
+  theme_classic() +
+  ylab("EducationField")+theme(legend.position = "none")+ theme(axis.text = element_text(size = 6)) 
+
+#---------
+m=fritolay %>% group_by(Gender) %>% summarize(No=round(((sum(Attrition=="No")/n())*100),1),Yes=100-(round(((sum(Attrition=="No")/n())*100),1)))
+m=gather(m, Attrition, per,Yes:No, factor_key=TRUE)
+
+e=m %>% ggplot(aes(x =Gender, y=per, fill=Attrition)) +
+  geom_col() +ggtitle("Gender") +
+  labs(y = "Count")+xlab("Gender")+
+  theme_classic() +
+  geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), y = per + 0.15), vjust = -.3) +
+  theme(legend.position="none")
+
+#---------
+m=fritolay %>% group_by(JobRole) %>% summarize(No=round(((sum(Attrition=="No")/n())*100),1),Yes=100-(round(((sum(Attrition=="No")/n())*100),1)))
+m=gather(m, Attrition, per,Yes:No, factor_key=TRUE)
+
+
+f=m %>% ggplot(aes(x =per, y=JobRole, fill=Attrition)) + 
+  geom_col() +xlab("Percent")+
+  geom_text(size=2,data=m, aes(label=paste(per,"%", sep=""), x = per), position = position_stack(vjust = 0.4)) +
+  theme_classic() +
+  ylab("Job Role")+theme(legend.position = "none")+ theme(axis.text = element_text(size = 5)) 
+
+#f=fritolay %>% ggplot(aes(y = as.factor(JobRole))) +
+  ##geom_bar(aes(fill = Attrition)) +ggtitle("JobRole") +
+  #labs(y = "Count")+
+  #geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), x = per), position = position_stack(vjust = 0.4)) +
+  #ylab("JobRole")+theme(legend.position = "none")
+#---------
+m=fritolay %>% group_by(OverTime) %>% summarize(No=round(((sum(Attrition=="No")/n())*100),1),Yes=100-(round(((sum(Attrition=="No")/n())*100),1)))
+m=gather(m, Attrition, per,Yes:No, factor_key=TRUE)
+
+
+g=m %>% ggplot(aes(x =OverTime, y=per, fill=Attrition)) +
+  geom_col() +ggtitle("Over Time") +
+  labs(y = "Count")+xlab("Over Time")+
+  theme_classic() +
+  geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), y = per + 0.15), vjust = -.3) 
+
+#--------
+
+#job Satisfaction
+j=fritolay %>% group_by(JobSatisfaction) %>% summarize(No=round(((sum(Attrition=="No")/n())*100),1),Yes=round((100-((sum(Attrition=="No")/n())*100)),1))
+m=gather(j, Attrition, per,Yes:No, factor_key=TRUE)
+
+js=m %>% ggplot(aes(x =as.factor(JobSatisfaction), y=per, fill=Attrition)) +
+  geom_col() +ggtitle("Job Satisfaction")+xlab("Job Satisfaction")+
+  theme_classic() +
+  geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), y = per + 0.15), vjust = -.3) 
+
+j=fritolay %>% group_by(JobInvolvement) %>% summarize(No=round(((sum(Attrition=="No")/n())*100),1),Yes=round((100-((sum(Attrition=="No")/n())*100)),1))
+m=gather(j, Attrition, per,Yes:No, factor_key=TRUE)
+
+#ji=fritolay %>% ggplot(aes(x = as.factor(JobInvolvement))) +
+ # geom_bar(aes(fill = Attrition,position = "dodge")) +ggtitle("Attrition by Job Involvement") +
+  #xlab("Job Involvement") +labs(y = "Count")+
+  #geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), y = per+.15), position = position_stack(vjust = 0.9))  
+
+ji=m %>% ggplot(aes(x =as.factor(JobInvolvement), y=per, fill=Attrition)) +
+  geom_col() +ggtitle("Job Involvement") +
+  labs(y = "Count")+xlab("Job Involvement")+
+  theme_classic() +
+  geom_text(size=3,data=m, aes(label=paste(per,"%", sep=""), y = per + 0.15), vjust = -.3) + theme(legend.position="none")
+
+grid.arrange(a,e,g, ncol=3)
+grid.arrange(ji, js, ncol=2)
+
+```
+#---------------------------------------------------------------------
+
+```{r, echo=FALSE, out.width="100%", out.height="150%",  fig.align = 'center'}
+grid.arrange(b,c,f,d, ncol=1)
+```
+**Insights for categorical variables**
+
+- MaritalStatus vs churn
+  - 47% of the people are married, followed by single 30% and then divorce 21%
+  - Single people have the highest overturn rate of 26% and divorce has the lowest with 6%
+## People that do over time have the highest highest overturn rate of 68% more churn than those that don't do over time
+  - Those that do Overtime have 32% churn while those that don't have 9.7%.
+  - Human Resources have the lowest amount of people but the highest churn percent, 27%
+  - HR only has 4%, that is very little. Maybe a survey should also be performed to see if people more HR support is needed to make employees feel confortable.
+  
+  
+
+## EDA: Continuos Variables
+
+```{r, echo=FALSE}
+
+# Percent of zero's in each of the ontinues/numeric columns 
+contin_zero=sapply(fritolay, function(x) (((sum(x==0))/870)*100)) 
+# make into a data frame
+contin_zero=as.data.frame(contin_zero)
+contin_zero$Variable=rownames(contin_zero)
+rownames(contin_zero)<-c()
+#plot to visualize
+contin_zero %>% ggplot(aes(x=contin_zero, y=Variable, fill=Variable))+ 
+  geom_col() +theme(legend.position = "none") +
+  xlab("Percent of zero's") +
+  ggtitle("Percent of zero's in data") + xlim(0,100)+
+  geom_text(size=3,position = position_dodge(width= .5), aes(label=paste((as.integer(contin_zero)),"%", sep="")),vjust= .5, hjust = -0.5) 
+
+```
+
+- Almost 50% of the data with stock option a zero tells that many people opt out or are not given the option of Stock-option.
+- Per the amount of zero's in promotion, it is showing that within a year many people have been promoted.
+- Per the zero years with current manager and year in role, we can see that there are quite a few new workers
+
+
+- Let's see distribution and stats of everything
+```{r}
+#summary(cont_data)
+```
+ 
+
+- ID and EmployeeNumber, EmployeeCount,StandardHours should not be used for the model
+  - StandardHours and Employee count only have one value, 80 for std hours and 1 for employee count
+- People age ranges from 18-60 years old with a mean of 35
+- Gender distribution
+  - 59% Male and 41% female
+  - More male and female
+- Hourly rate and daily rate, MonthlyRate , standardHours seem to No correlation per graphs
+- There seems to not be any relationship between Job involvement and job level
+- Looking at those that have NumCompaniesWorked equal 0:
+  - They have worked, it says minimum Years working at the company is 1, performance is mostly 3, they have a monthly income of mean $2,045 which means that these most likely are new employees who haven't completed a year.
+  
+```{r}
+#are there duplicates?
+fritolay[duplicated(fritolay)] # No Duplicates
+```
+
+```{r}
+#remove col
+fritolay=fritolay %>% select(-ID, -EmployeeNumber, -EmployeeCount, -NumCompaniesWorked, -StandardHours)
+
+## Looking at those with NumCompnaiesWorked as 0
+#fritolay %>% filter(NumCompaniesWorked==0)
+#fritolay %>% filter(StockOptionLevel==0)
+#fritolay %>% filter(TotalWorkingYears==0) #----->>>They seem to be new workers. They are 7,  18-19 years old, single with relationship between 3-4,age 18-19, companies worked 1 and it is their first company
+#fritolay %>% filter(TrainingTimesLastYear==0)
+#fritolay %>% filter(YearsAtCompany==0)
+#fritolay %>% filter(YearsInCurrentRole==0)
+#YearsSinceLastPromotion, yearswithcurrmanager, YearsInCurrentRole all 0
+```
+
+- Those with total working years as 0 seem to be new workers. They are 18-19 years old, single, with relationship between 3-4,age 18-19, companies worked 1, and their first company
+- All zero's in the data make sense and most seem to portray new workers.
+
+
+### Correlation
+```{r, echo=FALSE,  fig.height = 15, fig.width = 15}
+
+library("ggstatsplot")
+
+ggstatsplot::ggcorrmat(
+  data = cont_data,
+  type = "parametric", # parametric for Pearson, nonparametric for Spearman's correlation
+  colors = c("darkred", "white", "steelblue") # change default colors
+)
+
+```
+
+**Normal trends that should appear in every company, are shown in the company**
+  - Monthly Income vs Job Level
+  - Performance Rate vs Percent Salary Hike level
+  - Monthly Income vs Total Years working 
+  - total working years and age 
+  - Job level vs monthly income 
+  - Monthly income vs total working years
+  - Relationship vs Years With manager
+  - Performance rating vs training
+  - Jobrole vs Worklife balance
+  - Performance Rating vs Relationship with manager
+  - Job level and monthly income vs Total working years .78
+
+- Research scientist are the happiest with their jobs. They have the highest Job Satisfaction, sales rep
+
+# Interesting Facts
+  - People that do not travel have tend to have the lowest overturn rate\
+  - Research and development is the most prevalent department with 64% and it has the highest attriiton rate of 87%\
+  -  Director jobs tend to have the lowest turn over rate. Only 2% quit their job
+  - All people that studied Marketing are in sales, just like all people that studied human resources are in human resources. However thoe who had education in: Other, Technical, Science, Medicine work also work in other fields.
+  - 17% of those that study medicine ended up going into Sales
+  - 2.7% that did Technical deegree ended up in human resources which is surprising
+
+
+# Linear regression to predict Monthly Income
+```{r}
+library(car)
+library(lmtest)
+library("car")
+library(splitstackshape)
+
+
+set.seed(20)#set seed
+TrainObs = sample(seq(1,dim(fritolay)[1]),round(.75*dim(fritolay)[1]),replace = FALSE) #75% split
+salaryTrain = fritolay[TrainObs,]
+salaryTest = fritolay[-TrainObs,]
+RMSE_store=c() #Sore all RMSE to compare
+Model1_ = lm(MonthlyIncome ~ .-Department-Attrition, data = salaryTrain)
+#Using with all the data
+
+#vif(Model1_) #check collinearity
+#The variance inflation is  high for JobRole. Due to the strong collinarity between Jobrole and another indepent variable, I need to remove it from model
+#let's see the score though
+
+### Important variables: YearsSinceLastPromotion, TotalWorkingYears,PerformanceRating, MonthlyRate,JobRoleLaboratory Technician,JobRoleManager ,JobRoleResearch Scientist, JobRoleResearch Director , JobLevel, BusinessTravelTravel_Rarely
+
+Model1_ = lm(MonthlyIncome ~ .-Department-JobRole-Attrition, data = salaryTrain) #removing JobRole from the model as it has high collinarity
+#vif(Model1_) #check collinearity again
+#that is better so we can continue
+#summary(Model1_)
+#r sqr .90 not bad
+Model1_Preds = predict(Model1_, newdata = salaryTest)#Predict
+MSPE = mean((salaryTest$MonthlyIncome - Model1_Preds)^2)
+RMSE <- function(error) { sqrt(mean(error^2)) }
+RMSE(Model1_$residuals)#get RMSE
+#1338.657
+
+RMSE_store=c(RMSE_store,RMSE(Model1_$residuals))#store value
+
+#Second try using most important values based on model one's p values
+Model2_ = lm(MonthlyIncome~TotalWorkingYears+JobLevel+DistanceFromHome+YearsWithCurrManager,data=salaryTrain)
+#vif(Model2_) #no collinearity between the dependent variables
+#summary(Model2_)
+#R .92
+Model2_Preds = predict(Model2_, newdata = salaryTest) #predict
+MSPE_2 = mean((salaryTest$MonthlyIncome - Model2_Preds)^2)
+RMSE <- function(error) { sqrt(mean(error^2)) }
+RMSE(Model2_$residuals) #get RMSE
+#1351
+
+#Try  model 2.5 using LOOCV
+train(MonthlyIncome~TotalWorkingYears+JobLevel+DistanceFromHome+YearsWithCurrManager, method ="lm", data=fritolay, trControl = trainControl(method="LOOCV"))
+
+#RMSE 1377
+
+#Model 3 
+Model3_ = lm(MonthlyIncome~TotalWorkingYears+I(TotalWorkingYears^2)+JobLevel+I(JobLevel^2)+DistanceFromHome+YearsWithCurrManager+I(YearsWithCurrManager^2), data=salaryTrain)
+#vif(Model3_)#collinearity increased so it won't be a good model as we fails the assumptions of linear model
+#summary(Model3_) #R .92
+Model3_Preds = predict(Model3_, newdata = salaryTest) 
+MSPE_3 = mean((salaryTest$MonthlyIncome - Model3_Preds)^2)
+RMSE <- function(error) { sqrt(mean(error^2)) }
+RMSE(Model3_$residuals)
+#1259 <--better RMSE but too high correlation
+#plot(Model3_)
+
+RMSE_store=c(RMSE_store,RMSE(Model3_$residuals)) #save RMSE
+
+#Model4 is better
+train(MonthlyIncome~TotalWorkingYears+I(TotalWorkingYears^2)+JobLevel+I(JobLevel^2)+DistanceFromHome+I(DistanceFromHome^2)+YearsWithCurrManager+I(YearsWithCurrManager^2), method ="lm", data=fritolay, trControl = trainControl(method="LOOCV"))
+#RMSE 1286
+```
+
+### Best model was Model was model 2 \
+#### According to the p values produced, the model suggest that these are the most influencial variables when predicting monthly salary:
+  - OverTimeYes                       < 2e-16 ***	
+  - JobInvolvement                   1.20e-07 ***	
+  - JobSatisfaction                  4.79e-06 ***	
+  - MonthlyIncome                    0.000154 ***
+  - MaritalStatusSingle              0.000412 ***
+  - YearsSinceLastPromotion          0.004467 ** 
+  
+- Graph of Linear model results  
+```{r}
+new=salaryTest
+new$Predictions=Model2_Preds
+new %>% ggplot(aes(salaryTest$MonthlyIncome,Predictions)) + geom_point() + geom_smooth()+ ggtitle("Actual vs predictions")+ xlab("Actual")+
+  ylab("Predicted")
+
+RMSE_store=c(RMSE_store,RMSE(Model2_$residuals))#store value
+```
+
+##### Predict salary utilizing the best model
+
+```{r}
+#Now let's predict with our best model with not too much collinearity  Model 2
+NoSalary=read.csv("CaseStudy2CompSet No Salary.csv")
+Model2_Preds = predict(Model2_, newdata = NoSalary)
+NoSalary$MonthlyIncome=Model2_Preds
+NoSalary=NoSalary %>% select(ID,MonthlyIncome)
+write.csv(NoSalary,file="NoSalaryResult.csv", row.names=FALSE) #creates new CSV with results
+
+```
+
+
+
+# NaibeBays to predict Attrition
+```{r}
+#Changing "Attrition" variable to a binary value
+fritolay$AttritionBin<-ifelse(fritolay$Attrition=="Yes",1,0)
+#get an idea on most important variables using lenear regression utilizing the categorical column of attrition
+Model1_ = lm(AttritionBin ~ .-Attrition, data = fritolay)
+#summary(Model1_)
+#let's create a model with them and check
+t2=lm(AttritionBin ~ OverTime+JobInvolvement+JobSatisfaction+MonthlyIncome+MaritalStatus+YearsSinceLastPromotion, data = fritolay)
+#summary(t2)
+#vif(t2) #not toomuch correlaiton! great! let's start with these variables
+
+##Explore the density of Monthly income to standarize it
+#ggplot(fritolay, aes(MonthlyIncome)) + geom_density(fill="blue")
+#ggplot(fritolay, aes(log(MonthlyIncome))) + geom_density(fill="blue")
+#ggplot(fritolay, aes(sqrt(MonthlyIncome))) + geom_density(fill="blue")
+
+#Standarizing Monthly income with log as it seem to give the best distribution
+fritolay$logMonthlyIncome<-log(fritolay$MonthlyIncome)
+
+#Testing Accuracy of Naive Bayes model
+
+library(e1071)
+splitPerc = .70 #split 70%
+trainIndices = sample(1:dim(fritolay)[1],round(splitPerc*dim(fritolay)[1]))
+train = fritolay[trainIndices,]
+test = fritolay[-trainIndices,]
+
+#Test 1
+model = naiveBayes(train,train$Attrition)
+prediction = table(predict(model,test),test$Attrition)
+CM = confusionMatrix(prediction, positive = "Yes")
+CM
+
+```
+- Overfitted the data 
+
+```{r}
+#test 2
+model2=naiveBayes(Attrition ~ OverTime+JobInvolvement+JobSatisfaction+MonthlyIncome+MaritalStatus+YearsSinceLastPromotion+logMonthlyIncome+EnvironmentSatisfaction+DistanceFromHome+WorkLifeBalance+JobRole+RelationshipSatisfaction, data=fritolay)
+prediction2 = table(predict(model2,test),test$Attrition)
+CM = confusionMatrix(prediction2, positive = "Yes")
+CM
+
+```
+
+##### Predict on unlabled data
+
+```{r}
+#Predict on unlabeled data
+NoAttrition=read.csv("CaseStudy2CompSet No Attrition.csv")
+Attrition_Preds = predict(model2,NoAttrition)
+NoAttrition$Attrition=Attrition_Preds
+NoAttrition=NoAttrition %>% select(ID,Attrition)
+
+#Create CSV
+write.csv(NoAttrition,file="NoAttritionResult.csv", row.names=FALSE)
+#read.csv("NoAttritionResult.csv")
+
+
+#Verifying top 3 factors for attrition
+#CM = confusionMatrix(prediction, positive = "Yes")
+#m1 <- glm(AttritionBin~JobSatisfaction+OverTime+JobInvolvement, #family=binomial, data=fritolay)
+#summary(m1)
+```
+
+
+### Graphs used to gather some of the above analysis and to understand data
+
+```{r}
+library(corrplot)
+#pred <- Model1_ %>%predict_classes(salaryTest) %>% factor(0:8)
+
+#help(predict_class)
+ 
+#res_tab <- table(Pred = pred, Act = test_labels)
+#res_prop <- prop.table(res_tab,2)
+ 
+#author_key <- tibble(author = nt_frame$author, code = nt_frame$author_factor) %>%
+ # unique %>%
+#  arrange(code)
+ 
+#colnames(res_prop) <- author_key$author
+#rownames(res_prop) <- author_key$author
+#corrplot(res_prop,is.corr = FALSE,
+        # method = "circle", addCoef.col = "lightblue", number.cex = 0.7)
+
+```
+
+- Checking what constitute each department segment
+```{r}
+unique(fritolay %>% filter(Department=="Sales") %>% select(JobRole))
+unique(fritolay %>% filter(Department=="Research & Development") %>% select(JobRole))
+unique(fritolay %>% filter(Department=="Human Resources") %>% select(JobRole))
+# Manager Appears on both Sales and Research Development so lets update the name
+fritolay[fritolay=="Manager" & fritolay$Department=="Sales"]="Sales Manager"
+fritolay[fritolay=="Manager" & fritolay$Department=="Human Resources"]="HR Manager"
+
+```
+
+- Education vs department insights
+```{r}
+library(viridis)
+library("ggsci")
+
+# Discrete color
+fritolay %>% ggplot(aes (y=EducationField, fill=Department)) + geom_bar() + 
+  ylab("Education Field") + 
+  ggtitle("Educational field vs Department") 
+
+
+
+fritolay %>% group_by(EducationField) %>% summarize(Total_people=n(), Sales=paste((0+(round(((sum(Department=="Sales")/n())*100),1))),"%",sep=""), Research=paste((0+(round(((sum(Department=="Research & Development")/n())*100),1))),"%", sep=""), HR=paste((0+(round(((sum(Department=="Human Resources")/n())*100),1))),"%", sep=""))
+
+```
+
+- All people that studied Marketing are in sales, just like all people that studied human resources are in human resources. However thoe who had education in: Other, Technical, Science, Medicine work also work in other fields.
+- 17% of those that study medicine ended up going into Sales
+- 2.7% that did Technical deegree ended up in human resources which is surprising
+
+- Rest of graphs to understand data
+
+```{r, echo=FALSE}
+
+plot1=fritolay %>% ggplot(aes(x=DailyRate, fill="blue")) + 
+  geom_histogram()+ggtitle("Daily Rate")  + theme(legend.position = "none") 
+plot2=fritolay %>% ggplot(aes(x=MonthlyRate,fill="blue")) + 
+  geom_histogram()+ggtitle("Monthly Rate") + theme(legend.position = "none") 
+plot3=fritolay %>% ggplot(aes(x=HourlyRate,fill="blue")) + 
+  geom_histogram()+ggtitle("Hourly Rate")  + theme(legend.position = "none") 
+
+grid.arrange(plot3, plot1, plot2, ncol=3) 
+
+plot1=fritolay %>% ggplot(aes(x=TrainingTimesLastYear, fill="blue")) + 
+  geom_histogram()+ggtitle("TrainingTimesLastYear")  + theme(legend.position = "none") 
+plot2=fritolay %>% ggplot(aes(x=YearsSinceLastPromotion, fill="blue")) + 
+  geom_histogram()+ggtitle("YearsSinceLastPromotion")  + theme(legend.position = "none") 
+plot3=fritolay %>% ggplot(aes(x=YearsWithCurrManager, fill="blue")) + 
+  geom_histogram()+ggtitle("YearsWithCurrManager")  + theme(legend.position = "none") 
+
+grid.arrange(plot3, plot1, plot2, ncol=3) 
+```
+
+```{r, echo=FALSE, out.width="180%", out.height="250%"}
+a=gghistogram(fritolay, x = "YearsSinceLastPromotion", 
+  add = "mean", rug = TRUE,
+  fill = "Attrition", palette = c("darkturquoise", "ghostwhite")
+  )
+b=gghistogram(fritolay, x = "YearsWithCurrManager", 
+  add = "mean", rug = TRUE,
+  fill = "Attrition", palette = c("darkturquoise", "ghostwhite")
+  )
+c=gghistogram(fritolay, x = "YearsSinceLastPromotion", 
+  add = "mean", rug = TRUE,
+  fill = "Attrition", palette = c("darkturquoise", "ghostwhite")
+  )
+d=gghistogram(fritolay, x = "YearsInCurrentRole", 
+  add = "mean", rug = TRUE,
+  fill = "Attrition", palette = c("darkturquoise", "ghostwhite")
+  )
+e=gghistogram(fritolay, x = "EnvironmentSatisfaction", 
+  add = "mean", rug = TRUE,
+  fill = "Attrition", palette = c("darkturquoise", "ghostwhite")
+  )
+f=gghistogram(fritolay, x = "JobSatisfaction", 
+  add = "mean",
+  fill = "Attrition", palette = c("darkturquoise", "ghostwhite")
+  )
+grid.arrange(a,b,c,d,e,f, ncol=3)
+```
+
+- There also seems to not be any patterns between Rate columns and Attrition nor between Daily, montly and hourly rate.
+
+
+
+```{r, echo=FALSE, out.width="180%", out.height="150%"}
+
+p1=ggplot(fritolay, aes(x= as.factor(MaritalStatus),  group=Attrition)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +
+    geom_text(size=3,aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.3) +
+    labs(y = "Percent") +
+    facet_grid(~Attrition)+ scale_y_continuous(labels = scales::percent) + xlab("MaritalStatus")+
+  theme(legend.position = "none") +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 3)) 
+
+p2=ggplot(fritolay, aes(x= as.factor(Gender),  group=Attrition)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +
+    geom_text(size=3,aes( label = scales::percent(..prop..), 
+                   y= ..prop.. ), stat= "count", vjust = -.3) + 
+    labs(y = "Percent") +
+    facet_grid(~Attrition)+ scale_y_continuous(labels = scales::percent) +
+    xlab("Gender") + theme(legend.position = "none") 
+p3=ggplot(fritolay, aes(x= as.factor(BusinessTravel),  group=Attrition)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +
+    geom_text(size=3,aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.3) +
+    labs(y = "Percent") +
+    facet_grid(~Attrition)+
+    scale_y_continuous(labels = scales::percent) + xlab("BusinessTravel")+
+  theme(legend.position = "none") +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 3)) +
+  theme(axis.text.x=element_blank())
+p4=ggplot(fritolay, aes(x= as.factor(Department),  group=Attrition)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +
+    geom_text(size=3,aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.1) +
+    labs(y = "Percent") +
+    facet_grid(~Attrition)+scale_y_continuous(labels = scales::percent) +
+    xlab("Department") +
+  theme(legend.position = "none") +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 3)) 
+p5=ggplot(fritolay, aes(y= as.factor(EducationField),  group=Attrition)) + 
+    geom_bar(aes(x = ..prop.., fill = factor(..y..)), stat="count") +
+    geom_text(size=3,aes( label = scales::percent(round(..prop..,2)),
+                   x= ..prop.. ), stat= "count", vjust = -.3) +
+    labs(x = "Percent") +
+    facet_grid(~Attrition)+scale_x_continuous(labels = scales::percent) +
+    ylab("EducationField")+
+  theme(legend.position = "none") 
+p6=ggplot(fritolay, aes(y= as.factor(JobRole),  group=Attrition)) + 
+    geom_bar(aes(x = ..prop.., fill = factor(..y..)), stat="count") +
+    geom_text(size=3,aes( label = scales::percent(round(..prop..,2)),
+                   x= ..prop.. ), stat= "count", vjust = -.3) +
+    labs(x = "Percent") +
+    facet_grid(~Attrition)+scale_x_continuous(labels = scales::percent) +
+    ylab("JobRole")+
+  theme(legend.position = "none") 
+p7=ggplot(fritolay, aes(x= as.factor(OverTime),  group=Attrition)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +
+    geom_text(size=3,aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.3) +
+    labs(y = "Percent") +
+    facet_grid(~Attrition)+scale_y_continuous(labels = scales::percent) +
+    xlab("OverTime")+
+  theme(legend.position = "none") 
+#grid.arrange(p2,p7,p1,p4,p3, ncol=2)
+grid.arrange(p5,p6, ncol=1)
+p1
+```
+```{r}
+#new_day==cont_data %>% select("DailyRate")
+#does not equals daily Rate!
+ggplot(fritolay, aes(x=Age, fill=as.factor(JobSatisfaction))) + geom_bar() 
+ggplot(fritolay, aes(y=YearsSinceLastPromotion,color=as.factor(JobSatisfaction))) + geom_boxplot() 
+
+ggplot(fritolay, aes(x=YearsSinceLastPromotion, fill=as.factor(JobSatisfaction))) + geom_bar() 
+cor.test(x=fritolay$JobSatisfaction, y=fritolay$YearsSinceLastPromotion,method = "spearman")
+#no correclation btw years an las promotion
+
+ggplot(fritolay, aes(x=YearsSinceLastPromotion, y=JobSatisfaction, color=as.factor(JobSatisfaction))) + geom_col() 
+#environment satisfaction vs jobsatisfaction
+
+ggplot(fritolay, aes(x=EnvironmentSatisfaction, y=JobSatisfaction, color=as.factor(JobSatisfaction))) + geom_col()
+cor.test(x=fritolay$EnvironmentSatisfaction, y=fritolay$JobSatisfaction,method = "spearman")
+#no correlation
+
+ggplot(fritolay, aes(x=EnvironmentSatisfaction, fill=as.factor(JobSatisfaction))) + geom_bar()
+
+ggplot(fritolay, aes(y=EnvironmentSatisfaction, fill=as.factor(JobSatisfaction))) + geom_boxplot()
+
+ggplot(fritolay, aes(y=(JobRole), fill=as.factor(JobSatisfaction))) + geom_bar()
+
+ggplot(fritolay, aes(y=(WorkLifeBalance), fill=as.factor(Attrition))) + geom_bar()
+#no coee
+
+
+l=fritolay  %>% group_by(JobRole) %>% summarize(one=round(((sum(JobSatisfaction==1)/n())*100),1),
+                   two=round(((sum(JobSatisfaction==2)/n())*100),1),
+                   three=round(((sum(JobSatisfaction==3)/n())*100),1),
+                   four=round(((sum(JobSatisfaction==4)/n())*100),1)) 
+
+
+ggplot(fritolay, aes(y= as.factor(JobRole),  group=JobSatisfaction)) + 
+    geom_bar(aes(x = ..prop.., fill = factor(..y..)), stat="count") +
+    geom_text(size=2,aes( label = scales::percent(..prop..),
+                   x= ..prop.. ), stat= "count", vjust = -.3) +
+    labs(y = "Percent") +
+    facet_grid(~JobSatisfaction)+ scale_x_continuous(labels = scales::percent) +
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 3)) 
+#there seems to not be a relationship between environment and job satisfaction
+
+#monthly rate + job_satisfaction
+ggplot(fritolay, aes(y=MonthlyRate, color=as.factor(JobSatisfaction))) + geom_boxplot() 
+#the satisfaction for 3 and 4 have a higher mean monthly rate than that of 1 and 2
+
+f=fritolay %>% group_by(EnvironmentSatisfaction) %>% summarize(one=round(((sum(JobSatisfaction==1)/n())*100),1),
+                   two=round(((sum(JobSatisfaction==2)/n())*100),1),
+                   three=round(((sum(JobSatisfaction==3)/n())*100),1),
+                   four=round(((sum(JobSatisfaction==4)/n())*100),1)) 
+
+
+```
