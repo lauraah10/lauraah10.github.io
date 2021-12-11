@@ -8,3 +8,5 @@ navbar:
       href: Budweiser_analysis.html
     - text: "CLT2"
       href: CLT2.html
+    - text: "Fritolay"
+      href: project2.html
