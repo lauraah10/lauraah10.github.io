@@ -37,9 +37,10 @@
        .section li {margin-bottom: 5px;font-size: 16px;color: #555; */
 /*        .text-box {background-color: white;padding: 20px;border-radius: 10px;border: 1px solid black;} */
        .container {display: flex;justify-content: space-between;align-items: flex-start;}
-       .link-box {text-align: center;list-style-type: none;border: 1px solid #ccc: width: 20%; background-color: white;padding: 20px;border-radius: 10px;margin-right: 40px;}
+/*        .link-box {text-align: center;list-style-type: none;border: 1px solid #ccc: width: 20%; background-color: white;padding: 20px;border-radius: 10px;margin-right: 40px;} */
        .section-box {flex: 1;background-color: white;padding: 20px;border-radius: 10px;}
-       
+       .link-box {display: grid;grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+       .link-box a {display: block;background-color: white;padding: 10px;border: 1px solid #ccc;border-radius: 5px;text-decoration: none;color: #333;font-weight: bold;}       
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -299,6 +300,14 @@ $(document).ready(function () {
 </div>
 
 <div class="link-box">
+  <a href="myWB.html">My Resume</a>
+  <a href="https://github.com/lauraah10/MachineLearning_1stProject/blob/main/Clustering_DS7331.ipynb">Adult Census Business Case</a>
+  <a href="https://github.com/lauraah10/Statistcs2-project-2/blob/main/Loanlikelihood.pdf">Loan Likelihood Project</a>
+  <a href="https://lauraah10.github.io/project2.html">Fritolay Business case with link to presentation</a>
+  <a href="https://lauraah10.github.io/Budweiser_analysis.html">Budwiser Business case with link to a Shiny App</a>
+</div>
+
+<!-- <div class="link-box">
     <ul class="link-list">
       <li><a href="myWB.html">My Resume</a></li>
       <li><a href="https://github.com/lauraah10/MachineLearning_1stProject/blob/main/Clustering_DS7331.ipynb">Adult Census Business Case</a></li>
@@ -307,7 +316,7 @@ $(document).ready(function () {
        <li><a href="https://lauraah10.github.io/Budweiser_analysis.html">Budwiser Business case with link to a Shiny App</a></li>
      
     </ul>
-</div>
+</div> -->
 
 
 
