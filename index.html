@@ -28,6 +28,10 @@
        h4 {font-size: 18px;}
        h5 {font-size: 16px;}
        h6 {font-size: 12px;}
+       .link-box {border: 1px solid #ccc;padding: 20px;border-radius: 5px;background-color: #f7f7f7;}
+       .link-list {list-style: none;padding: 0;}
+       .link-list li {margin-bottom: 10px;}
+       .link-list a {display: inline-block;padding: 10px 20px;background-color: #007bff;color: #fff;text-decoration: none;border-radius: 5px;}
        .center-image {display: block; margin: 20px auto;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
@@ -286,12 +290,14 @@ $(document).ready(function () {
 
 
 <div id="a-ut-alumni" class="section level3">
-  <ul>
-    <li><a href="myWB.html">A link to my resume</a></li>
-    <li><a href="https://github.com/lauraah10/MachineLearning_1stProject/blob/main/Clustering_DS7331.ipynb">A link to Adult Census Business case</a></li>
-    <li><a href="https://lauraahumada.shinyapps.io/Knn_credit/">A link to the shiny app of the visualization of one of the projects</a></li>
-    <li><a href="https://github.com/lauraah10/Statistcs2-project-2/blob/main/Loanlikelihood.pdf">A link to a Loan likelihood Project</a></li>
-  </ul>
+  <div class="link-box">
+    <ul class="link-list">
+      <li><a href="myWB.html">My Resume</a></li>
+      <li><a href="https://github.com/lauraah10/MachineLearning_1stProject/blob/main/Clustering_DS7331.ipynb">Adult Census Business Case</a></li>
+      <li><a href="https://lauraahumada.shinyapps.io/Knn_credit/">Visualization Shiny App</a></li>
+      <li><a href="https://github.com/lauraah10/Statistcs2-project-2/blob/main/Loanlikelihood.pdf">Loan Likelihood Project</a></li>
+    </ul>
+  </div>
 </div>
 
 
