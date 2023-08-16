@@ -33,6 +33,9 @@
        .link-list li {margin-bottom: 10px;}
        .link-list a {display: inline-block;padding: 10px 20px;background-color: grey ;color: #fff;text-decoration: none;border-radius: 5px;}
        .center-image {display: block; margin: 20px auto;}
+       .image-container {position: relative;display: inline-block;}
+       .image-container img {display: block;max-width: 100%;height: auto;}
+       .image-text {position: absolute;bottom: 10px;left: 50%;transform: translateX(-50%); color: white;background-color: rgba(0, 0, 0, 0.6);padding: 5px 10px;border-radius: 5px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -266,7 +269,6 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">About me:</h1>
-<h3 class="author">Laura Ahumada</h3>
 
 
 </div>
@@ -274,8 +276,11 @@ $(document).ready(function () {
 
 <div id="your-only-limit-is-your-mind" class="section level2">
 <p></p>
+<div class="image-container">
+  <img src="me.jpeg" alt="Me">
+  <div class="image-text">Laura Ahumada</div>
+</div>
 
-<img src="me.jpeg" alt="Me" class="center-image" style="width:180px;height:220px;">
 <div id="i-am-from-colombia" class="section level3">
 <h3>As a Linguist with a minor in Computer science, my passion has always been in Computational Linguistics (NLP). Working on algorithms/machine learning models that can analyze natural language to gain insights and improve human tasks is my main objective.</h3>
 
