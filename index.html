@@ -39,27 +39,35 @@
        .container {display: flex;justify-content: space-between;align-items: flex-start;}
 /*        .link-box {text-align: center;list-style-type: none;border: 1px solid #ccc: width: 20%; background-color: white;padding: 20px;border-radius: 10px;margin-right: 40px;} */
        .section-box {flex: 1;background-color: white;padding: 20px;border-radius: 10px;}
-.link-banner {
+.link-banner {display: flex;justify-content: space-between;align-items: center;background-color: #f5f5f5;padding: 10px;}
+.link-banner a {text-decoration: none;color: #333;font-weight: bold;padding: 10px;border-radius: 5px;background-color: grey;margin-right: 20px; }
+.link-banner a:last-child {margin-right: 0;}
+.project-columns {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #f5f5f5;
-  padding: 10px;
+  gap: 20px;
 }
 
-.link-banner a {
+.project-column {
+  flex: 1;
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.project-column h2 {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.project-column a {
+  display: block;
   text-decoration: none;
   color: #333;
-  font-weight: bold;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: grey;
-  margin-right: 20px; /* Add spacing between links */
+  margin-bottom: 5px;
 }
 
-.link-banner a:last-child {
-  margin-right: 0; /* Remove margin from the last link */
-}
+/* Your other styles... */
+
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -326,6 +334,27 @@ $(document).ready(function () {
   <a href="https://lauraah10.github.io/project2.html">Fritolay with link to presentation</a>
   <a href="https://lauraah10.github.io/Budweiser_analysis.html">Budwiser with link to a Shiny App</a>
 </div>
+
+<div class="project-columns">
+  <div class="project-column">
+    <h2>DS Project using R</h2>
+    <a href="#">Link 1</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a>
+  </div>
+  <div class="project-column">
+    <h2>DS Project using Python</h2>
+    <a href="#">Link 1</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a>
+  </div>
+  <div class="project-column">
+    <h2>OO Python Games</h2>
+    <a href="#">Link 1</a>
+    <a href="#">Link 2</a>
+  </div>
+</div>
+
        
 <!-- <div class="link-box">
   <a href="myWB.html">My Resume</a>
