@@ -23,12 +23,7 @@
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <style>h1 {font-size: 34px;}
        h1.title {font-size: 38px;}
-       h2 {font-size: 30px;}
-       h3 {font-size: 24px;}
-       h4 {font-size: 18px;}
-       h5 {font-size: 16px;}
-       h6 {font-size: 12px;}
-       .link-box {border: 1px solid #ccc;padding: 20px;border-radius: 5px;background-color: white;}
+/*        .link-box {border: 1px solid #ccc;padding: 20px;border-radius: 5px;background-color: white;}
        .link-list {padding: 0;}
        .link-list li {margin-bottom: 10px;}
        .link-list a {list-style-type: none;display: inline-block;padding: 10px 20px;background-color: grey ;color: #fff;text-decoration: none;border-radius: 5px;}
@@ -36,10 +31,14 @@
        .image-container {text-align: center;}
        .image-container img {max-width: 100%;height: auto;}
        .image-text {margin-top: 10px; color: #333;font-weight: bold;}
-.section {background-color: white;border: 1px solid #ddd;padding: 20px;border-radius: 5px;margin-bottom: 20px;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);}
-.section p {margin-bottom: 15px;font-size: 16px; color: #333;
-.section ul {list-style: disc;padding-left: 20px;margin-bottom: 0;}
-.section li {margin-bottom: 5px;font-size: 16px;color: #555;
+       .section {background-color: white;border: 1px solid #ddd;padding: 20px;border-radius: 5px;margin-bottom: 20px;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);}
+       .section p {margin-bottom: 15px;font-size: 16px; color: #333;
+       .section ul {list-style: disc;padding-left: 20px;margin-bottom: 0;}
+       .section li {margin-bottom: 5px;font-size: 16px;color: #555; */
+       .container {display: flex;justify-content: space-between;align-items: flex-start;}
+       .link-box {width: 30%; background-color: #e0e0e0;padding: 20px;border-radius: 10px;}
+       .section-box {flex: 1;background-color: #f5f5f5;padding: 20px;border-radius: 10px;}
+       
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -285,8 +284,9 @@ $(document).ready(function () {
   <div class="image-text">Laura Ahumada</div>
 </div>
 
-<div id="i-am-from-colombia" class="section level3">
-  <div class="section">
+<div class="container">
+  <div class="section-box">
+   <div class="section-content">
   <p>As a Linguist with a minor in Computer Science, my passion has always been in Computational Linguistics (NLP). Working on algorithms and machine learning models that analyze natural language to gain insights and improve human tasks is my main objective.</p>
 
   <p>While obtaining additional education through Coursera courses, an AI & ML Post Graduate certificate at UT, and pursuing a Data Science master's degree at SMU, I have also been exposed to different parts of the business and evolved in each.</p>
@@ -301,7 +301,6 @@ $(document).ready(function () {
 </div>
 
 
-<div id="a-ut-alumni" class="section level3">
   <div class="link-box">
     <ul class="link-list">
       <li><a href="myWB.html">My Resume</a></li>
