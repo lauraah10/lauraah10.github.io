@@ -23,53 +23,19 @@
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <style>h1 {font-size: 34px;}
        h1.title {font-size: 38px;}
-/*        .link-box {border: 1px solid #ccc;padding: 20px;border-radius: 5px;background-color: white;}
-       .link-list {padding: 0;}
-       .link-list li {margin-bottom: 10px;}
-       .link-list a {list-style-type: none;display: inline-block;padding: 10px 20px;background-color: grey ;color: #fff;text-decoration: none;border-radius: 5px;}
-       .center-image {display: block; margin: 20px auto;}*/
        .image-container {text-align: center;margin-right: 20px;}
        .image-container img {max-width: 100%;height: auto;}
        .image-text {margin-top: 20px; color: #333;font-weight: bold;}
-/*        .section {background-color: white;border: 1px solid #ddd;padding: 20px;border-radius: 5px;margin-bottom: 20px;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);}
-       .section p {margin-bottom: 15px;font-size: 16px; color: #333;
-       .section ul {list-style: disc;padding-left: 20px;margin-bottom: 0;}
-       .section li {margin-bottom: 5px;font-size: 16px;color: #555;  */
-/*        .text-box {background-color: white;padding: 20px;border-radius: 10px;border: 1px solid black;} */
        .container {display: flex;justify-content: space-between;align-items: flex-start;margin-left: 20px}
-/*        .link-box {text-align: center;list-style-type: none;border: 1px solid #ccc: width: 20%; background-color: white;padding: 20px;border-radius: 10px;margin-right: 40px;} */
        .section-box {flex: 0 0 60%; background-color: white; border-radius: 10px;}
-/*        .section-box {flex: 1;background-color: white;padding: 20px;border-radius: 10px;} */
-       
-.link-banner {display: flex;justify-content: space-between;align-items: center;background-color: #f5f5f5;padding: 10px;}
-.link-banner a {text-decoration: none;color: #333;font-weight: bold;padding: 10px;border-radius: 5px;background-color: grey;margin-right: 20px; }
-.link-banner a:last-child {margin-right: 0;}
-.project-columns {
-  display: flex;
-  gap: 20px;
-}
-
-.project-column {
-  flex: 1;
-  background-color: #f5f5f5;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.project-column h2 {
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.project-column a {
-  display: block;
-  text-decoration: none;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-/* Your other styles... */
-
+       .link-banner {display: flex;justify-content: space-between;align-items: center;background-color: #f5f5f5;padding: 10px;}
+       .link-banner a {text-decoration: none;color: #333;font-weight: bold;padding: 10px;border-radius: 5px;background-color: grey;margin-right: 20px; }
+       .link-banner a:last-child {margin-right: 0;}
+       .project-columns {display: flex;gap: 20px;}
+       .project-column {flex: 1;background-color: #f5f5f5;padding: 20px;border-radius: 10px;}
+       .project-column h2 {font-weight: bold;margin-bottom: 10px;}
+       .project-column a {display: block; text-decoration: none;color: #333;margin-bottom: 5px;}
+       .section-content {text-decoration: underline;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -328,59 +294,33 @@ $(document).ready(function () {
   </div>
 </div>
 
-<!-- <p>Project</p>
-<div class="link-banner">
-  <a href="myWB.html">My Resume</a>
-  <a href="https://github.com/lauraah10/MachineLearning_1stProject/blob/main/Clustering_DS7331.ipynb">Adult Census </a>
-  <a href="https://github.com/lauraah10/Statistcs2-project-2/blob/main/Loanlikelihood.pdf">Loan Likelihood</a>
-  <a href="https://lauraah10.github.io/project2.html">Fritolay with link to presentation</a>
-  <a href="https://lauraah10.github.io/Budweiser_analysis.html">Budwiser with link to a Shiny App</a>
-</div> -->
 
 <div class="project-columns">
   <div class="project-column">
     <h4>ML Projects using R</h2>
+    <div class="section-content">
     <a href="https://github.com/lauraah10/Statistcs2-project-2/blob/main/Results_Ahumada_Nguyen_McClure-Price_.pdf">Personal Loan Analysis</a>
     <a href="https://github.com/lauraah10/Statistcs2-project-2/blob/main/Loanlikelihood.pdf">Personal Loan Analysis with R code</a>
     <a href="https://lauraah10.github.io/Budweiser_analysis.html">Budweiser Busines case</a>
     <a href="https://lauraah10.github.io/project2.html">Fritolay Business case</a>
   </div>
+  </div>
   <div class="project-column">
     <h4>ML Projects using Python</h2>
+    <div class="section-content">
     <a href="https://github.com/lauraah10/MachineLearning_1stProject/blob/main/Clustering_DS7331.ipynb">Statistical Analysis of Adult Census</a>
     <a href="https://github.com/lauraah10/MachineLearning_1stProject/blob/main/6Classification_Models_DS7331.ipynb">Groups within Society</a>
     <a href="https://github.com/lauraah10/Projects/tree/master/AI%20%26%20ML">Extra ML projects</a>
   </div>
+  </div>
   <div class="project-column">
     <h4>OOP Python Games</h2>
+    <div class="section-content">
     <a href="#">Sudoku using BP</a>
     <a href="#">Playpoker</a>
+    </div>
   </div>
 </div>
-
-       
-<!-- <div class="link-box">
-  <a href="myWB.html">My Resume</a>
-  <a href="https://github.com/lauraah10/MachineLearning_1stProject/blob/main/Clustering_DS7331.ipynb">Adult Census Business Case</a>
-  <a href="https://github.com/lauraah10/Statistcs2-project-2/blob/main/Loanlikelihood.pdf">Loan Likelihood Project</a>
-  <a href="https://lauraah10.github.io/project2.html">Fritolay Business case with link to presentation</a>
-  <a href="https://lauraah10.github.io/Budweiser_analysis.html">Budwiser Business case with link to a Shiny App</a>
-</div> -->
-
-<!-- <div class="link-box">
-    <ul class="link-list">
-      <li><a href="myWB.html">My Resume</a></li>
-      <li><a href="https://github.com/lauraah10/MachineLearning_1stProject/blob/main/Clustering_DS7331.ipynb">Adult Census Business Case</a></li>
-       <li><a href="https://github.com/lauraah10/Statistcs2-project-2/blob/main/Loanlikelihood.pdf">Loan Likelihood Project</a></li>
-       <li><a href="https://lauraah10.github.io/project2.html">Fritolay Business case with link to presentation</a></li>
-       <li><a href="https://lauraah10.github.io/Budweiser_analysis.html">Budwiser Business case with link to a Shiny App</a></li>
-     
-    </ul>
-</div> -->
-
-
-
-
 </div>
 
 <script>
